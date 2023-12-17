@@ -17,6 +17,7 @@ class BloggieDbContext : DbContext
             if (e.State == EntityState.Added)
             {
                 ((BaseEntity)e.Entity).CreatedAt = DateTime.UtcNow;
+                ((User)e.Entity).ApiKey = new ApiKeyService().GenerateApiKey();
             }
 
             Console.WriteLine(((BaseEntity)e.Entity).CreatedAt);
@@ -36,6 +37,7 @@ class BloggieDbContext : DbContext
             if (e.State == EntityState.Added)
             {
                 ((BaseEntity)e.Entity).CreatedAt = DateTime.UtcNow;
+                ((User)e.Entity).ApiKey = new ApiKeyService().GenerateApiKey();
             }
 
             Console.WriteLine(((BaseEntity)e.Entity).CreatedAt);
@@ -44,4 +46,3 @@ class BloggieDbContext : DbContext
         return base.SaveChanges();
     }
 }
-
