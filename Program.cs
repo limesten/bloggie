@@ -16,5 +16,20 @@ app.MapPost("/users", async (BloggieDbContext context, User user) =>
     await context.SaveChangesAsync();
     return Results.Ok(await context.Users.ToListAsync());
 });
+app.MapGet("/users", async (HttpContext httpContext, BloggieDbContext context) =>
+{
+    var apiKey = httpContext.Request.Headers["x-api-key"].ToString();
+    if (apiKey == "")
+    {
+        return Results.BadRequest("Api key missing");
+    }
+    var user = await context.Users.FirstOrDefaultAsync(u => u.ApiKey == apiKey);
+
+    if (user != null) 
+    {
+        return Results.Ok(user);
+    }
+    return Results.NotFound("User not found");
+});
 
 app.Run();
