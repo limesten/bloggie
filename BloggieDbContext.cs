@@ -5,6 +5,15 @@ class BloggieDbContext : DbContext
     public BloggieDbContext(DbContextOptions<BloggieDbContext> options) : base(options) {}
 
     public DbSet<User> Users { get; set; }
+    public DbSet<Feed> Feeds { get; set; }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<Feed>()
+            .HasOne(f => f.User)
+            .WithMany(u => u.Feeds)
+            .HasForeignKey(f => f.UserId);
+    }
 
     public override async Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default)
     {
