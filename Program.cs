@@ -8,6 +8,8 @@ builder.Services.AddHealthChecks();
 
 var app = builder.Build();
 
+app.UseMiddleware<ApiKeyAuthMiddleware>();
+
 app.MapGet("/", () => "Hello World!");
 app.MapHealthChecks("/healthz");
 app.MapPost("/users", async (BloggieDbContext context, User user) => 
@@ -16,20 +18,17 @@ app.MapPost("/users", async (BloggieDbContext context, User user) =>
     await context.SaveChangesAsync();
     return Results.Ok(await context.Users.ToListAsync());
 });
-app.MapGet("/users", async (HttpContext httpContext, BloggieDbContext context) =>
+app.MapGet("/users", async (HttpContext httpContext) =>
 {
-    var apiKey = httpContext.Request.Headers["x-api-key"].ToString();
-    if (apiKey == "")
+    if (httpContext.Items.TryGetValue("User", out var user))
     {
-        return Results.BadRequest("Api key missing");
-    }
-    var user = await context.Users.FirstOrDefaultAsync(u => u.ApiKey == apiKey);
-
-    if (user != null) 
+        await httpContext.Response.WriteAsJsonAsync(user);
+    } 
+    else 
     {
-        return Results.Ok(user);
+        httpContext.Response.StatusCode = 404;
+        await httpContext.Response.WriteAsync("User not found");
     }
-    return Results.NotFound("User not found");
 });
 
 app.Run();

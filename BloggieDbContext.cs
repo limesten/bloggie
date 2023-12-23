@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 
-class BloggieDbContext : DbContext
+public class BloggieDbContext : DbContext
 {
     public BloggieDbContext(DbContextOptions<BloggieDbContext> options) : base(options) {}
 
