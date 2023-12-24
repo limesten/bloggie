@@ -12,7 +12,10 @@ builder.Services.Configure<Microsoft.AspNetCore.Http.Json.JsonOptions>(options =
 });
 var app = builder.Build();
 
-app.UseMiddleware<ApiKeyAuthMiddleware>();
+app.UseWhen(
+    context => !(context.Request.Path.StartsWithSegments("/feeds") && context.Request.Method == "GET"),
+    builder => builder.UseMiddleware<ApiKeyAuthMiddleware>()
+);
 
 app.MapGet("/", () => "Hello World!");
 app.MapHealthChecks("/healthz");
@@ -54,6 +57,11 @@ app.MapPost("/feeds", async (HttpContext httpContext, BloggieDbContext context, 
     {
         return Results.NotFound("User not found");
     }
+});
+app.MapGet("/feeds", async (HttpContext httpContext, BloggieDbContext context) =>
+{
+    var feeds = await context.Feeds.ToListAsync();
+    return Results.Ok(feeds);
 });
 
 app.Run();
