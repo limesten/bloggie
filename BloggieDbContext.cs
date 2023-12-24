@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 
 public class BloggieDbContext : DbContext
 {
-    public BloggieDbContext(DbContextOptions<BloggieDbContext> options) : base(options) {}
+    public BloggieDbContext(DbContextOptions<BloggieDbContext> options) : base(options) { }
 
     public DbSet<User> Users { get; set; }
     public DbSet<Feed> Feeds { get; set; }
@@ -26,11 +26,7 @@ public class BloggieDbContext : DbContext
             if (e.State == EntityState.Added)
             {
                 ((BaseEntity)e.Entity).CreatedAt = DateTime.UtcNow;
-                ((User)e.Entity).ApiKey = new ApiKeyService().GenerateApiKey();
             }
-
-            Console.WriteLine(((BaseEntity)e.Entity).CreatedAt);
-            Console.WriteLine(((BaseEntity)e.Entity).UpdatedAt);
         }
         return await base.SaveChangesAsync(true, cancellationToken).ConfigureAwait(false);
     }
@@ -46,7 +42,6 @@ public class BloggieDbContext : DbContext
             if (e.State == EntityState.Added)
             {
                 ((BaseEntity)e.Entity).CreatedAt = DateTime.UtcNow;
-                ((User)e.Entity).ApiKey = new ApiKeyService().GenerateApiKey();
             }
 
             Console.WriteLine(((BaseEntity)e.Entity).CreatedAt);

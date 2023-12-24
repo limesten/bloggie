@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 
-public class ApiKeyAuthMiddleware 
+public class ApiKeyAuthMiddleware
 {
     private readonly RequestDelegate _next;
 
@@ -20,7 +20,7 @@ public class ApiKeyAuthMiddleware
         }
         var user = await context.Users.FirstOrDefaultAsync(u => u.ApiKey == apiKey);
 
-        if (user == null) 
+        if (user == null)
         {
             httpContext.Response.StatusCode = 404;
             await httpContext.Response.WriteAsync("Invalid API key");
